@@ -1,6 +1,7 @@
 # Golang build container
 FROM golang:1.11.4
 
+ENV GOPROXY https://goproxy.cn,direct
 WORKDIR $GOPATH/src/github.com/grafana/grafana
 
 COPY Gopkg.toml Gopkg.lock ./
@@ -24,7 +25,10 @@ FROM node:8
 WORKDIR /usr/src/app/
 
 COPY package.json yarn.lock ./
-RUN yarn install --pure-lockfile --no-progress
+
+RUN yarn config set registry https://registry.npm.taobao.org -g && \
+  yarn config set sass_binary_site http://cdn.npm.taobao.org/dist/node-sass -g && \
+  yarn install --pure-lockfile --no-progress
 
 COPY Gruntfile.js tsconfig.json tslint.json ./
 COPY public public
